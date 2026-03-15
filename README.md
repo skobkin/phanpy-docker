@@ -26,24 +26,23 @@ The pipeline also supports manual Woodpecker triggers.
 
 `woodpeckerci/plugin-docker-buildx:6` needs privileged execution. In Woodpecker, make sure this repository is trusted and that the plugin image is allowed in `WOODPECKER_PLUGINS_PRIVILEGED` on the server or agent side.
 
-## Required variables
-
-Configure these repository variables in Woodpecker:
-
-- `DOCKERHUB_IMAGE_REPO`: target repository on Docker Hub, for example `skobkin/phanpy`
-- `GHCR_IMAGE_REPO`: target repository on GHCR, for example `ghcr.io/skobkin/phanpy-docker`
-
-These are plain repository variables, not secrets.
-
 ## Required secrets
 
 Configure these Woodpecker secrets:
 
+- `DOCKERHUB_IMAGE_REPO`
+- `GHCR_IMAGE_REPO`
 - `DOCKERHUB_LOGIN`
 - `DOCKERHUB_TOKEN`
 - `GHCR_LOGIN`
 - `GHCR_TOKEN`
 - `PHANPY_BUILD_ENV`
+
+This repository intentionally uses Woodpecker secrets for all repository-specific inputs, including the image repository names. That keeps `manual` and `cron` runs on the same config path and avoids depending on cron-only environment overrides.
+
+`DOCKERHUB_IMAGE_REPO` is the target repository on Docker Hub, for example `skobkin/phanpy`.
+
+`GHCR_IMAGE_REPO` is the target repository on GHCR, for example `ghcr.io/skobkin/phanpy-docker`.
 
 `PHANPY_BUILD_ENV` should contain the Phanpy build-time environment in `.env` format. CI passes it into the Docker build as a BuildKit secret so the values are not committed to this repository.
 

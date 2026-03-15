@@ -8,8 +8,11 @@ steps:
   - name: prepare-release
     image: alpine:3.23
     environment:
-      DOCKERHUB_IMAGE_REPO: ${DOCKERHUB_IMAGE_REPO}
-      GHCR_IMAGE_REPO: ${GHCR_IMAGE_REPO}
+      # Woodpecker repository-specific user input is modeled as secrets in this repo.
+      DOCKERHUB_IMAGE_REPO:
+        from_secret: DOCKERHUB_IMAGE_REPO
+      GHCR_IMAGE_REPO:
+        from_secret: GHCR_IMAGE_REPO
       GHCR_LOGIN:
         from_secret: GHCR_LOGIN
       GHCR_TOKEN:
@@ -28,7 +31,8 @@ steps:
     depends_on:
       - prepare-release
     environment:
-      DOCKERHUB_IMAGE_REPO: ${DOCKERHUB_IMAGE_REPO}
+      DOCKERHUB_IMAGE_REPO:
+        from_secret: DOCKERHUB_IMAGE_REPO
       DOCKERHUB_LOGIN:
         from_secret: DOCKERHUB_LOGIN
       DOCKERHUB_TOKEN:
@@ -48,7 +52,8 @@ steps:
     depends_on:
       - prepare-release
     environment:
-      GHCR_IMAGE_REPO: ${GHCR_IMAGE_REPO}
+      GHCR_IMAGE_REPO:
+        from_secret: GHCR_IMAGE_REPO
       GHCR_LOGIN:
         from_secret: GHCR_LOGIN
       GHCR_TOKEN:
