@@ -1,4 +1,4 @@
-# phanpy-docker
+# phanpy-docker [![status-badge](https://ci.skobk.in/api/badges/9/status.svg?events=cron%2Cmanual)](https://ci.skobk.in/repos/9)
 
 Builds and publishes a self-hosted Docker image for [Phanpy](https://github.com/cheeaun/phanpy) with Woodpecker CI.
 
