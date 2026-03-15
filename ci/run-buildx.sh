@@ -23,7 +23,8 @@ export PLUGIN_DOCKERFILE="Dockerfile"
 export PLUGIN_TAGS_FILE=".woodpecker/tags.txt"
 export PLUGIN_ENV_FILE=".woodpecker/release.env"
 export PLUGIN_BUILD_ARGS_FROM_ENV="PHANPY_VERSION"
-export PLUGIN_SECRETS="id=phanpy_env,src=${tmp_secret_file}"
+# The buildx plugin splits comma-containing settings unless commas are escaped.
+export PLUGIN_SECRETS="id=phanpy_env\\,src=${tmp_secret_file}"
 export PLUGIN_PLATFORMS="linux/amd64,linux/arm64"
 
 case "${target}" in
