@@ -22,62 +22,41 @@ steps:
       - event: cron
         cron: daily-release-check
 
-  - name: publish-image
+  - name: publish-dockerhub
     image: woodpeckerci/plugin-docker-buildx:6
     privileged: true
     depends_on:
       - prepare-release
     environment:
       DOCKERHUB_IMAGE_REPO: ${DOCKERHUB_IMAGE_REPO}
-      GHCR_IMAGE_REPO: ${GHCR_IMAGE_REPO}
+      DOCKERHUB_LOGIN:
+        from_secret: DOCKERHUB_LOGIN
+      DOCKERHUB_TOKEN:
+        from_secret: DOCKERHUB_TOKEN
       PHANPY_BUILD_ENV:
         from_secret: PHANPY_BUILD_ENV
-    settings:
-      repo:
-        - ${DOCKERHUB_IMAGE_REPO}
-        - ${GHCR_IMAGE_REPO}
-      dockerfile: Dockerfile
-      tags_file: .woodpecker/tags.txt
-      env_file: .woodpecker/release.env
-      build_args_from_env:
-        - PHANPY_VERSION
-      secrets:
-        - id=phanpy_env,env=PHANPY_BUILD_ENV
-      cache_images:
-        - ${DOCKERHUB_IMAGE_REPO}:buildcache
-        - ${GHCR_IMAGE_REPO}:buildcache
-      platforms:
-        - linux/amd64
-        - linux/arm64
-      logins:
-        - registry: https://index.docker.io/v1/
-          username:
-            from_secret: DOCKERHUB_LOGIN
-          password:
-            from_secret: DOCKERHUB_TOKEN
-        - registry: https://ghcr.io
-          username:
-            from_secret: GHCR_LOGIN
-          password:
-            from_secret: GHCR_TOKEN
     commands:
-      - . .woodpecker/release.env
-      - |
-        if [ "${SHOULD_BUILD}" != "1" ]; then
-          echo "Skipping Docker build because ${PHANPY_VERSION} is already published."
-          exit 0
-        fi
-      - |
-        for candidate in plugin-docker-buildx /bin/plugin-docker-buildx /usr/local/bin/plugin-docker-buildx; do
-          if command -v "${candidate}" >/dev/null 2>&1; then
-            exec "${candidate}"
-          fi
-          if [ -x "${candidate}" ]; then
-            exec "${candidate}"
-          fi
-        done
-        echo "Could not find the plugin-docker-buildx executable in the buildx plugin image." >&2
-        exit 1
+      - sh ci/run-buildx.sh dockerhub
+    when:
+      - event: manual
+      - event: cron
+        cron: daily-release-check
+
+  - name: publish-ghcr
+    image: woodpeckerci/plugin-docker-buildx:6
+    privileged: true
+    depends_on:
+      - prepare-release
+    environment:
+      GHCR_IMAGE_REPO: ${GHCR_IMAGE_REPO}
+      GHCR_LOGIN:
+        from_secret: GHCR_LOGIN
+      GHCR_TOKEN:
+        from_secret: GHCR_TOKEN
+      PHANPY_BUILD_ENV:
+        from_secret: PHANPY_BUILD_ENV
+    commands:
+      - sh ci/run-buildx.sh ghcr
     when:
       - event: manual
       - event: cron

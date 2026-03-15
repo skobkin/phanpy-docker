@@ -24,7 +24,7 @@ Create a cron job in the Woodpecker repository settings with:
 
 The pipeline also supports manual Woodpecker triggers.
 
-`woodpeckerci/plugin-docker-buildx:6` needs privileged execution. In Woodpecker, make sure this repository is trusted and that the plugin image is allowed in `WOODPECKER_PLUGINS_PRIVILEGED`.
+`woodpeckerci/plugin-docker-buildx:6` needs privileged execution. In Woodpecker, make sure this repository is trusted and that the plugin image is allowed in `WOODPECKER_PLUGINS_PRIVILEGED` on the server or agent side.
 
 ## Required variables
 
